@@ -1,0 +1,42 @@
+# Node
+node_modules/
+dist/
+.nyc_output/
+coverage/
+*.log
+.env
+.env.*
+
+# Editor configs
+.vscode/
+.idea/
+*.swp
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/dev.db-wal
+prisma/dev.db-shm
+prisma/test.db
+prisma/test.db-journal
+prisma/test.db-wal
+prisma/test.db-shm
+prisma/*.sqlite
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Jest
+jest-html-reporters-*.html
+test-results/
+
+# Misc
+.DS_Store
+Thumbs.db
