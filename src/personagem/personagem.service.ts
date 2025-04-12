@@ -8,7 +8,7 @@ import { ItemMagicoResponse } from 'src/item-magico/dto/item-response.dto';
 import { ClasseEnum } from './enum/classe.enum';
 import { AmuletoDuplicadoException, DefesaComArmaException, ForcaComArmaduraException, PersonagemNaoEncontradoException } from './erros/personagem.erros';
 import { AdicionarItem } from './dto/personagem-item.dto';
-import { ItensInvalidosException } from 'src/item-magico/erros/itens.erros';
+import { ItemMagicoNaoEncontradoException, ItensInvalidosException } from 'src/item-magico/erros/itens.erros';
 import { UpdateNomeAventureiro } from './dto/personagem-update.dto';
 
 @Injectable()
@@ -265,5 +265,100 @@ export class PersonagemService {
             if(erro instanceof PersonagemNaoEncontradoException) throw erro;
             throw new InternalServerErrorException();
         }
+    }
+
+    async buscarItensMagicos(idPersonagem: number): Promise<ItemMagicoResponse[]> {
+        try {
+            const personagem = await this.prisma.personagem.findUnique({
+                where: { id: idPersonagem },
+                include: {
+                    itensMagicos: true,
+                }
+            });
+    
+            if (!personagem) {
+                throw new PersonagemNaoEncontradoException(idPersonagem);
+            }
+    
+            return personagem.itensMagicos?.map((item) => ({
+                id: item.id,
+                nome: item.nome,
+                item: item.item,
+                forca: item.forca,
+                defesa: item.defesa,
+            })) ?? [];
+        } catch (erro) {
+            if (erro instanceof PersonagemNaoEncontradoException) throw erro;
+            console.error('Erro inesperado ao buscar os itens mágicos:', erro);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deletarItemMagico (idPersonagem: number, idItemMagico: number): Promise<void>{
+        try {
+            const personagem = await this.prisma.personagem.findUnique({
+                where: { id: idPersonagem },
+                include: { itensMagicos: true },
+            });
+    
+            if (!personagem) {
+                throw new PersonagemNaoEncontradoException(idPersonagem);
+            }
+    
+            const itemMagicoExistente = personagem.itensMagicos.find(
+                (item) => item.id === idItemMagico
+            );
+    
+            if (!itemMagicoExistente) {
+                throw new ItemMagicoNaoEncontradoException(idItemMagico);
+            }
+    
+            await this.prisma.personagem.update({
+                where: { id: idPersonagem },
+                data: {
+                    itensMagicos: {
+                        disconnect: { id: idItemMagico },
+                    },
+                },
+            });
+        } catch (erro) {
+            if (
+                erro instanceof PersonagemNaoEncontradoException ||
+                erro instanceof ItemMagicoNaoEncontradoException
+            ) throw erro;
+            console.error('Erro ao deletar item mágico:', erro);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async listarAmuletos (idPersonagem: number): Promise<ItemMagicoResponse | []> {
+        try {
+            const personagem = await this.prisma.personagem.findUnique({
+              where: { id: idPersonagem },
+              include: { itensMagicos: true },
+            });
+        
+            if (!personagem) {
+                throw new PersonagemNaoEncontradoException(idPersonagem);
+            }
+        
+            const amuleto = personagem.itensMagicos.find(item => item.item === ItemEnum.AMULETO);
+    
+            if (!amuleto) {
+                return [];
+            }
+
+            return {
+                id: amuleto.id,
+                nome: amuleto.nome,
+                item: amuleto.item as ItemEnum,
+                forca: amuleto.forca,
+                defesa: amuleto.defesa,
+              };
+        } catch (erro) {
+            if (erro instanceof PersonagemNaoEncontradoException) throw erro;
+            console.error('Erro ao buscar amuleto:', erro);
+            throw new InternalServerErrorException();
+        } 
     }
 }
