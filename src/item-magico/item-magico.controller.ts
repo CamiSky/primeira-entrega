@@ -36,7 +36,6 @@ export class ItemMagicoController {
   @ApiResponse({ status: 200, description: 'Item Mágico encontrado com sucesso', type: ItemMagicoResponse })
   @ApiResponse({ status: 400, description: 'Requisição inválida' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor' })
-  @ApiBody({ type: ItemMagicoRequest })
   async buscarItemMagico(@Param('idItemMagico') idItemMagico: string): Promise<ItemMagicoResponse> {
     return await this.itemMagicoService.buscarItemMagico(+idItemMagico);
   }
