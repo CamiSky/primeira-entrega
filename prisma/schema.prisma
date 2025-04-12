@@ -19,9 +19,10 @@ model Personagem {
   nome_aventureiro String
   classe           String
   level            Int
-  itensMagicos     String
   forca            Int
   defesa           Int
+
+  itensMagicos ItemMagico[]  @relation("PersonagemItem")
 }
 
 model ItemMagico {
@@ -30,4 +31,6 @@ model ItemMagico {
   item   String
   forca  Int
   defesa Int
+
+  personagens  Personagem[]  @relation("PersonagemItem")
 }
