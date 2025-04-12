@@ -19,7 +19,7 @@ export class PersonagemController {
   @ApiResponse({ status: 500, description: 'Erro interno do servidor' })
   @ApiBody({ type: PersonagemRequest})
   async cadastrarPersonagem(@Body() personagemRequest: any): Promise<PersonagemResponse> {
-    return this.personagemService.cadastrarPersonagem(personagemRequest);
+    return await this.personagemService.cadastrarPersonagem(personagemRequest);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -36,7 +36,7 @@ export class PersonagemController {
   })
   @ApiBody({ type: AdicionarItem})
   async adicionarItemAoPersonagem(@Param('idPersonagem') idPersonagem: string, @Body() item: any): Promise<PersonagemResponse> {
-    return this.personagemService.adicionarItemAoPersonagem(+idPersonagem, item);
+    return await this.personagemService.adicionarItemAoPersonagem(+idPersonagem, item);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -46,7 +46,7 @@ export class PersonagemController {
   @ApiResponse({ status: 400, description: 'Requisição inválida' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor' })
   async listarPersonagens(): Promise<PersonagemResponse[]> {
-    return this.personagemService.listarPersonagens();
+    return await this.personagemService.listarPersonagens();
   }
 
   @HttpCode(HttpStatus.OK)
@@ -62,7 +62,7 @@ export class PersonagemController {
     example: 1,
   })
   async buscarPersonagem(@Param('idPersonagem') idPersonagem: string): Promise<PersonagemResponse> {
-    return this.personagemService.buscarPersonagem(+idPersonagem);
+    return await this.personagemService.buscarPersonagem(+idPersonagem);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -79,6 +79,22 @@ export class PersonagemController {
   })
   @ApiBody({ type: UpdateNomeAventureiro})
   async atualizarNomePersonagem(@Param('idPersonagem') idPersonagem: string, @Body() nome: any): Promise<PersonagemResponse> {
-    return this.personagemService.atualizarNomePersonagem(+idPersonagem, nome);
+    return await this.personagemService.atualizarNomePersonagem(+idPersonagem, nome);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put('deletar/:idPersonagem')
+  @ApiOperation({summary: 'Deletar Personagem'})
+  @ApiResponse({ status: 201, description: 'Personagem deletado com sucesso' })
+  @ApiResponse({ status: 400, description: 'Requisição inválida' })
+  @ApiResponse({ status: 500, description: 'Erro interno do servidor' })
+  @ApiParam({
+    name: 'idPersonagem',
+    required: true,
+    description: 'ID do Personagem que será deletado',
+    example: 1,
+  })
+  async deletarPersonagem(@Param('idPersonagem') idPersonagem: string): Promise<void> {
+    await this.personagemService.deletarPersonagem(+idPersonagem);
   }
 }
