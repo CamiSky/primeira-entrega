@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class AmuletoDuplicadoException extends BadRequestException {
   constructor() {
@@ -15,5 +15,11 @@ export class DefesaComArmaException extends BadRequestException {
 export class ForcaComArmaduraException extends BadRequestException {
   constructor() {
     super('Seu item é do tipo ARMADURA, sua força precisa ser 0.');
+  }
+}
+
+export class PersonagemNaoEncontradoException extends NotFoundException {
+  constructor(id: number | string) {
+    super(`Personagem com ID '${id}' não encontrado.`);
   }
 }
