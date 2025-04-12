@@ -247,4 +247,23 @@ export class PersonagemService {
             throw new InternalServerErrorException();
         }
     }
+
+    async deletarPersonagem(idPersonagem: number): Promise<void>{
+        try {
+            const personagem = await this.prisma.personagem.findUnique({
+                where: { id: idPersonagem},
+            });
+
+            if (!personagem) {
+                throw new PersonagemNaoEncontradoException(idPersonagem);
+            }
+
+            await this.prisma.personagem.delete({
+                where: { id: idPersonagem}
+            })
+        } catch (erro) {
+            if(erro instanceof PersonagemNaoEncontradoException) throw erro;
+            throw new InternalServerErrorException();
+        }
+    }
 }
